@@ -335,35 +335,38 @@ function getRowStatuses(row) {
 }
 
 function buildMessage(row) {
-  const sections = [
-    `${row.recipientName}様`,
-    ...splitLines(els.openingText.value),
+  const blocks = [
+    [`${row.recipientName}様`],
+    splitLines(els.openingText.value),
+    buildLinkSection(els.sectionOneTitle.value, row.sectionOneName, row.sectionOneLink),
+    buildLinkSection(els.sectionTwoTitle.value, row.sectionTwoName, row.sectionTwoLink),
+    splitLines(els.signatureText.value),
   ];
-
-  appendLinkSection(sections, els.sectionOneTitle.value, row.sectionOneName, row.sectionOneLink);
-  appendLinkSection(sections, els.sectionTwoTitle.value, row.sectionTwoName, row.sectionTwoLink);
-  sections.push(...splitLines(els.signatureText.value));
 
   return {
     rowNumber: row.rowNumber,
     email: row.email,
     subject: els.subject.value.trim(),
-    body: sections.join('\n'),
+    body: blocks
+      .filter((block) => block.length > 0)
+      .map((block) => block.join('\n'))
+      .join('\n\n'),
   };
 }
 
-function appendLinkSection(sections, title, subName, link) {
+function buildLinkSection(title, subName, link) {
   if (!cleanCell(title) || !cleanCell(link)) {
-    return;
+    return [];
   }
 
-  sections.push(`[${cleanCell(title)}]`);
+  const section = [`[${cleanCell(title)}]`];
 
   if (cleanCell(subName)) {
-    sections.push(cleanCell(subName));
+    section.push(cleanCell(subName));
   }
 
-  sections.push(cleanCell(link));
+  section.push(cleanCell(link));
+  return section;
 }
 
 function selectValidRows() {
