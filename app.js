@@ -1,5 +1,6 @@
 const MAX_DAILY_SEND = 100;
 const STORAGE_KEY = 'unidol-benefit-dispatch-console-gmail-api-experiment-v1';
+const GOOGLE_OAUTH_CLIENT_ID = 'REPLACE_WITH_YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
 const GMAIL_SEND_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
 const USERINFO_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email';
 
@@ -14,7 +15,6 @@ const state = {
 
 const els = {
   sheetFile: document.getElementById('sheetFile'),
-  oauthClientId: document.getElementById('oauthClientId'),
   authorizeButton: document.getElementById('authorizeButton'),
   senderName: document.getElementById('senderName'),
   replyTo: document.getElementById('replyTo'),
@@ -60,7 +60,6 @@ function bindEvents() {
   els.downloadSampleButton.addEventListener('click', downloadSampleCsv);
 
   [
-    els.oauthClientId,
     els.subject,
     els.openingText,
     els.sectionOneTitle,
@@ -293,7 +292,7 @@ function renderSendState() {
   if (state.signedInEmail) {
     els.authMessage.textContent = `${state.signedInEmail} で接続中です。`;
   } else {
-    els.authMessage.textContent = 'Google OAuth クライアントIDを入力して接続してください。';
+    els.authMessage.textContent = 'Googleで接続してください。';
   }
 
   if (selected.length > MAX_DAILY_SEND) {
@@ -463,7 +462,6 @@ function appendBenefitWarning(warnings, label, subName, link) {
 
 function saveTemplate() {
   const data = {
-    oauthClientId: els.oauthClientId.value,
     senderName: els.senderName.value,
     replyTo: els.replyTo.value,
     subject: els.subject.value,
@@ -497,10 +495,8 @@ function loadSavedTemplate() {
 }
 
 function authorizeGmail() {
-  const clientId = els.oauthClientId.value.trim();
-
-  if (!clientId) {
-    showToast('Google OAuth クライアントIDを入力してください。');
+  if (!isConfiguredOAuthClientId()) {
+    showToast('アプリのGoogle OAuth クライアントIDが未設定です。');
     return;
   }
 
@@ -510,7 +506,7 @@ function authorizeGmail() {
   }
 
   state.tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: clientId,
+    client_id: GOOGLE_OAUTH_CLIENT_ID,
     scope: `${GMAIL_SEND_SCOPE} ${USERINFO_EMAIL_SCOPE}`,
     callback: async (response) => {
       if (response.error) {
@@ -525,6 +521,11 @@ function authorizeGmail() {
   });
 
   state.tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+function isConfiguredOAuthClientId() {
+  return GOOGLE_OAUTH_CLIENT_ID
+    && GOOGLE_OAUTH_CLIENT_ID !== 'REPLACE_WITH_YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
 }
 
 async function loadSignedInEmail() {
