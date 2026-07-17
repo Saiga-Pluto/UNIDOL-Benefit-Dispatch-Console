@@ -97,7 +97,7 @@ const GOOGLE_OAUTH_CLIENT_ID = '559908386582-ik6d0htjn9khesahdb052aif7qei08va.ap
 3. OAuth同意画面を設定する。
 4. OAuthクライアントIDを作成する。
 5. アプリケーションの種類は `ウェブ アプリケーション` を選ぶ。
-6. `承認済みの JavaScript 生成元` に `https://saiga-pluto.github.io` を追加する。
+6. `承認済みの JavaScript 生成元` に `https://eco12xx24.dev` を追加する。
    ローカル確認では `http://127.0.0.1:5173` などを追加する。
 7. 作成された `クライアントID` を `public/app.js` の `GOOGLE_OAUTH_CLIENT_ID` に設定する。
 
@@ -107,20 +107,20 @@ GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下
 
 | 項目 | URL |
 | --- | --- |
-| アプリのホームページ | `https://saiga-pluto.github.io/` |
-| プライバシーポリシーURL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/privacy.html` |
-| 利用規約URL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/terms.html` |
+| アプリのホームページ | `https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/` |
+| プライバシーポリシーURL | `https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/privacy.html` |
+| 利用規約URL | `https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/terms.html` |
 
-アプリのホームページには、Search Consoleで所有確認した `https://saiga-pluto.github.io/` を設定します。このページには、アプリ名、アプリの目的、プライバシーポリシー、利用規約、実際のアプリへのリンクを掲載しています。
+アプリのホームページには、独自ドメイン配下の `https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/` を設定します。このページには、アプリ名、アプリの目的、プライバシーポリシー、利用規約、実際のアプリへのリンクを掲載しています。
 
-`承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` はパスを含むため、この欄には入れられません。
+`承認済みの JavaScript 生成元` には、パスなしの `https://eco12xx24.dev` を設定します。`https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/` はパスを含むため、この欄には入れられません。
 
 ### OAuthブランディング設定で使うロゴ
 
 アプリ用ロゴは `public/logo.svg` にあります。GitHub Pages公開後のURLは以下です。
 
 ```text
-https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/logo.svg
+https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/logo.svg
 ```
 
 Google CloudのOAuthブランディング画面でPNG/JPG形式を求められる場合は、このSVGを `512x512px` のPNGに書き出して使用してください。ロゴは、特定大学チームやUNIDOL公式のロゴと誤認されないよう、チケット上に `UBDC` と表示したシンプルなツール用アイコンにしています。
@@ -154,7 +154,7 @@ GoogleのOAuth確認申請では、スコープごとに利用目的を説明し
 公開ページは `public/privacy.html` にあります。OAuth同意画面の `Privacy Policy URL` には以下を設定してください。
 
 ```text
-https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/privacy.html
+https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/privacy.html
 ```
 
 掲載内容:
@@ -193,7 +193,7 @@ UNIDOL Benefit Dispatch Console（以下「本アプリ」）は、ユーザー�
 公開ページは `public/terms.html` にあります。OAuth同意画面の `Terms of Service URL` には以下を設定してください。
 
 ```text
-https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/terms.html
+https://eco12xx24.dev/UNIDOL-Benefit-Dispatch-Console/terms.html
 ```
 
 掲載内容:
