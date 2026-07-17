@@ -173,7 +173,7 @@ UNIDOL Benefit Dispatch Console（以下「本アプリ」）は、ユーザー�
 
 本アプリによるGoogleユーザーデータの利用は、ユーザーに明示された機能の提供に限定されます。Googleユーザーデータを広告、分析、信用評価、販売目的で使用しません。
 
-問い合わせ先: https://github.com/Saiga-Pluto/bombs-benefit-mailer-web/issues
+問い合わせ先: https://x.com/eco_bombs
 ```
 
 ### 利用規約
