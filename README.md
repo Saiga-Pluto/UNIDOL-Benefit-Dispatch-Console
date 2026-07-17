@@ -1,6 +1,6 @@
 # UNIDOL Benefit Dispatch Console
 
-CSV / TSV / Excelをアップロードして、メール本文のプレビュー、送信対象の選択、GAS API経由のメール送信を行うWebアプリです。
+CSV / TSV / Excelをアップロードして、メール本文のプレビュー、送信対象の選択、Googleログイン経由のメール送信を行うWebアプリです。
 
 ## ディレクトリ
 
@@ -97,9 +97,21 @@ const GOOGLE_OAUTH_CLIENT_ID = '559908386582-ik6d0htjn9khesahdb052aif7qei08va.ap
 3. OAuth同意画面を設定する。
 4. OAuthクライアントIDを作成する。
 5. アプリケーションの種類は `ウェブ アプリケーション` を選ぶ。
-6. `承認済みの JavaScript 生成元` に公開URLを追加する。
+6. `承認済みの JavaScript 生成元` に `https://saiga-pluto.github.io` を追加する。
    ローカル確認では `http://127.0.0.1:5173` などを追加する。
 7. 作成された `クライアントID` を `public/app.js` の `GOOGLE_OAUTH_CLIENT_ID` に設定する。
+
+### OAuth同意画面に設定するURL
+
+GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下を設定します。
+
+| 項目 | URL |
+| --- | --- |
+| アプリのホームページ | `https://saiga-pluto.github.io/bombs-benefit-mailer-web/` |
+| プライバシーポリシーURL | `https://saiga-pluto.github.io/bombs-benefit-mailer-web/privacy.html` |
+| 利用規約URL | `https://saiga-pluto.github.io/bombs-benefit-mailer-web/terms.html` |
+
+`承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/bombs-benefit-mailer-web/` はパスを含むため、この欄には入れられません。
 
 ### 注意点
 
@@ -125,13 +137,17 @@ GoogleのOAuth確認申請では、スコープごとに利用目的を説明し
 ログイン中のGoogleアカウントのメールアドレスを画面上に表示し、どのGmailアドレスから送信されるかをユーザーが確認できるようにするために使用します。
 ```
 
-### プライバシーポリシー雛形
+### プライバシーポリシー
 
-以下を公開ページとして用意し、OAuth同意画面の `Privacy Policy URL` に設定してください。
+公開ページは `public/privacy.html` にあります。OAuth同意画面の `Privacy Policy URL` には以下を設定してください。
 
 ```text
-# プライバシーポリシー
+https://saiga-pluto.github.io/bombs-benefit-mailer-web/privacy.html
+```
 
+掲載内容:
+
+```text
 UNIDOL Benefit Dispatch Console（以下「本アプリ」）は、ユーザーがアップロードした送信リストに基づいて、ユーザー自身のGoogleアカウントからデジタル特典メールを送信するためのツールです。
 
 ## 取得する情報
@@ -157,18 +173,20 @@ UNIDOL Benefit Dispatch Console（以下「本アプリ」）は、ユーザー�
 
 本アプリによるGoogleユーザーデータの利用は、ユーザーに明示された機能の提供に限定されます。Googleユーザーデータを広告、分析、信用評価、販売目的で使用しません。
 
-## 問い合わせ先
-
-問い合わせ先メールアドレス: [運営者のメールアドレス]
+問い合わせ先: https://github.com/Saiga-Pluto/bombs-benefit-mailer-web/issues
 ```
 
-### 利用規約雛形
+### 利用規約
 
-OAuth同意画面で `Terms of Service URL` を求められる場合は、以下を公開ページとして用意してください。
+公開ページは `public/terms.html` にあります。OAuth同意画面の `Terms of Service URL` には以下を設定してください。
 
 ```text
-# 利用規約
+https://saiga-pluto.github.io/bombs-benefit-mailer-web/terms.html
+```
 
+掲載内容:
+
+```text
 本アプリは、ユーザーが管理する送信リストに基づき、デジタル特典メールの作成、確認、送信を補助するツールです。
 
 ユーザーは、送信先の同意または正当な送信理由がある場合に限り、本アプリを使用できます。スパム、迷惑メール、虚偽内容の送信、第三者の権利を侵害する利用は禁止します。
