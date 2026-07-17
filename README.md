@@ -46,7 +46,16 @@ python3 -m http.server 5173 --directory public
 
 ## GitHub Pages
 
-GitHub Pagesで公開する場合は、リポジトリの Pages 設定で公開元を対象ブランチの `/public` にしてください。
+GitHub Pagesで公開する場合は、リポジトリの Pages 設定で `Source` を `GitHub Actions` にしてください。
+
+GitHub Pagesの画面で `/public` が選択肢に出ない場合があります。これは正常です。`Deploy from a branch` では通常 `/root` または `/docs` しか選べないため、このリポジトリでは `.github/workflows/pages.yml` で `public/` ディレクトリをデプロイします。
+
+設定手順:
+
+1. GitHubリポジトリの `Settings` を開く。
+2. `Pages` を開く。
+3. `Build and deployment` の `Source` で `GitHub Actions` を選ぶ。
+4. `experiment-gmail-api-login` ブランチへpushすると、自動で `public/` が公開される。
 
 `main` ブランチのGAS API方式では、`gas-send-api/` のGASを別途デプロイし、Webアプリ画面の「送信用GAS API URL」に貼り付けます。
 
