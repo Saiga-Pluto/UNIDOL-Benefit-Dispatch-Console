@@ -73,15 +73,15 @@ button.secondary:hover {
 .brand-lockup {
   align-items: center;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
 }
 
 .app-logo {
-  border-radius: 14px;
+  border-radius: 10px;
   flex: 0 0 auto;
-  height: 56px;
-  width: 56px;
+  height: 40px;
+  width: 40px;
 }
 
 .eyebrow {

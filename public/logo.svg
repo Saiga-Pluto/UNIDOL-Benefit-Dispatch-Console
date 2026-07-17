@@ -1,14 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">UNIDOL Benefit Dispatch Console logo</title>
-  <desc id="desc">A mail envelope and ticket icon for a digital benefit dispatch tool.</desc>
+  <desc id="desc">A simple ticket icon with UBDC lettering.</desc>
   <rect width="512" height="512" rx="96" fill="#101828"/>
-  <circle cx="362" cy="150" r="94" fill="#0f766e"/>
-  <circle cx="168" cy="368" r="74" fill="#f4c542"/>
-  <rect x="104" y="150" width="304" height="210" rx="30" fill="#ffffff"/>
-  <path d="M128 178l128 96 128-96" fill="none" stroke="#0b5f59" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M128 332l92-82" fill="none" stroke="#d0d5dd" stroke-width="18" stroke-linecap="round"/>
-  <path d="M384 332l-92-82" fill="none" stroke="#d0d5dd" stroke-width="18" stroke-linecap="round"/>
-  <path d="M302 132h92a20 20 0 0 1 20 20v46a28 28 0 0 0 0 56v46a20 20 0 0 1-20 20h-92a20 20 0 0 1-20-20V152a20 20 0 0 1 20-20z" fill="#9ee4da"/>
-  <path d="M326 172h44M326 222h54M326 272h38" fill="none" stroke="#101828" stroke-width="16" stroke-linecap="round"/>
-  <path d="M282 178h132" fill="none" stroke="#101828" stroke-width="14" stroke-linecap="round" stroke-dasharray="2 30"/>
+  <path d="M112 178c0-22 18-40 40-40h208c22 0 40 18 40 40v44c-19 7-32 25-32 46s13 39 32 46v44c0 22-18 40-40 40H152c-22 0-40-18-40-40v-44c19-7 32-25 32-46s-13-39-32-46v-44z" fill="#ffffff"/>
+  <path d="M174 164v208" fill="none" stroke="#0f766e" stroke-width="18" stroke-linecap="round" stroke-dasharray="8 28"/>
+  <text x="268" y="288" fill="#101828" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="800" letter-spacing="0" text-anchor="middle">UBDC</text>
+  <path d="M224 326h88" fill="none" stroke="#0f766e" stroke-width="16" stroke-linecap="round"/>
 </svg>

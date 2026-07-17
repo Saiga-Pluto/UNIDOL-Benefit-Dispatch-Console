@@ -121,7 +121,7 @@ GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下
 https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/logo.svg
 ```
 
-Google CloudのOAuthブランディング画面でPNG/JPG形式を求められる場合は、このSVGを `512x512px` のPNGに書き出して使用してください。ロゴは、特定大学チームやUNIDOL公式のロゴと誤認されないよう、封筒とチケットを組み合わせたツール用の抽象アイコンにしています。
+Google CloudのOAuthブランディング画面でPNG/JPG形式を求められる場合は、このSVGを `512x512px` のPNGに書き出して使用してください。ロゴは、特定大学チームやUNIDOL公式のロゴと誤認されないよう、チケット上に `UBDC` と表示したシンプルなツール用アイコンにしています。
 
 ### 注意点
 
