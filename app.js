@@ -1,6 +1,6 @@
 const MAX_DAILY_SEND = 100;
 const STORAGE_KEY = 'unidol-benefit-dispatch-console-gmail-api-experiment-v1';
-const GOOGLE_OAUTH_CLIENT_ID = 'REPLACE_WITH_YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
+const GOOGLE_OAUTH_CLIENT_ID = '559908386582-ik6d0htjn9khesahdb052aif7qei08va.apps.googleusercontent.com';
 const GMAIL_SEND_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
 const USERINFO_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email';
 
