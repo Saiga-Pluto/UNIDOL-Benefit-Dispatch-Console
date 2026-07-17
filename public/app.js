@@ -7,6 +7,7 @@ const USERINFO_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email';
 const state = {
   rows: [],
   activeId: null,
+  sourceFileName: '',
   sending: false,
   accessToken: '',
   tokenClient: null,
@@ -38,6 +39,7 @@ const els = {
   saveTemplateButton: document.getElementById('saveTemplateButton'),
   selectValidButton: document.getElementById('selectValidButton'),
   clearSelectionButton: document.getElementById('clearSelectionButton'),
+  downloadUpdatedCsvButton: document.getElementById('downloadUpdatedCsvButton'),
   downloadSampleButton: document.getElementById('downloadSampleButton'),
   toast: document.getElementById('toast'),
 };
@@ -53,6 +55,7 @@ function bindEvents() {
   els.saveTemplateButton.addEventListener('click', saveTemplate);
   els.selectValidButton.addEventListener('click', selectValidRows);
   els.clearSelectionButton.addEventListener('click', clearSelection);
+  els.downloadUpdatedCsvButton.addEventListener('click', downloadUpdatedCsv);
   els.authorizeButton.addEventListener('click', authorizeGmail);
   els.sendButton.addEventListener('click', openSendDialog);
   els.confirmSendButton.addEventListener('click', sendSelectedRows);
@@ -79,6 +82,7 @@ async function handleFileChange(event) {
 
   try {
     const rows = await readSheetFile(file);
+    state.sourceFileName = file.name;
     loadRows(rows);
     showToast(`${file.name} を読み込みました。`);
   } catch (error) {
@@ -115,7 +119,7 @@ async function readSheetFile(file) {
 
 function loadRows(rawRows) {
   const normalized = rawRows
-    .map((row) => Array.from({ length: 7 }, (_, index) => cleanCell(row[index])))
+    .map((row) => Array.from({ length: 8 }, (_, index) => cleanCell(row[index])))
     .filter((row) => row.some(Boolean));
 
   if (normalized.length < 2) {
@@ -143,9 +147,14 @@ function loadRows(rawRows) {
       sectionTwoName: row[4],
       sectionTwoLink: row[5],
       selected: parseCheckbox(row[6]),
-      sent: false,
+      sent: parseCheckbox(row[7]),
       error: '',
     };
+
+    if (item.sent) {
+      item.selected = false;
+    }
+
     item.validationErrors = validateRow(item);
     return item;
   });
@@ -205,6 +214,7 @@ function render() {
   renderTable();
   renderPreview();
   renderSendState();
+  renderDownloadState();
 }
 
 function renderCounts() {
@@ -231,7 +241,7 @@ function renderTable() {
     return `
       <tr class="${row.id === state.activeId ? 'active' : ''} ${needsReview ? 'needs-review' : ''}" data-row-id="${row.id}">
         <td class="check-cell">
-          <input type="checkbox" data-select-id="${row.id}" ${row.selected ? 'checked' : ''} ${row.validationErrors.length ? 'disabled' : ''}>
+          <input type="checkbox" data-select-id="${row.id}" ${row.selected ? 'checked' : ''} ${row.validationErrors.length || row.sent ? 'disabled' : ''}>
         </td>
         <td>${row.rowNumber}</td>
         <td>${escapeHtml(row.email || '-')}</td>
@@ -307,6 +317,10 @@ function renderSendState() {
   els.sendButton.disabled = !ready;
 }
 
+function renderDownloadState() {
+  els.downloadUpdatedCsvButton.disabled = state.rows.length === 0;
+}
+
 function getRowStatuses(row) {
   if (row.sent) {
     return [{ label: '送信済み', className: 'ok' }];
@@ -370,7 +384,7 @@ function buildLinkSection(title, subName, link) {
 
 function selectValidRows() {
   state.rows.forEach((row) => {
-    row.selected = row.validationErrors.length === 0;
+    row.selected = row.validationErrors.length === 0 && !row.sent;
   });
   render();
 }
@@ -402,7 +416,7 @@ async function sendSelectedRows() {
     }
 
     applySendResults(results);
-    showToast('送信処理が完了しました。');
+    showToast('送信処理が完了しました。送信済みCSVを保存してください。');
   } catch (error) {
     showToast(error.message);
   } finally {
@@ -634,10 +648,10 @@ function base64UrlEncode(value) {
 
 function downloadSampleCsv() {
   const csv = [
-    ['メールアドレス', '宛名', 'メッセージ動画', '特典リンク', '待ち受け画像', '特典リンク', '送信対象'],
-    ['sample@example.com', '山田', 'あやか', 'https://example.com/video', 'りな', 'https://example.com/wallpaper', 'TRUE'],
-    ['sample2@example.com', '佐藤', '', 'https://example.com/video2', '', 'https://example.com/wallpaper2', 'FALSE'],
-    ['sample3@example.com', '鈴木', 'みほ', '', 'りな', '', 'FALSE'],
+    ['メールアドレス', '宛名', 'メッセージ動画', '特典リンク', '待ち受け画像', '特典リンク', '送信対象', '送信済み'],
+    ['sample@example.com', '山田', 'あやか', 'https://example.com/video', 'りな', 'https://example.com/wallpaper', 'TRUE', 'FALSE'],
+    ['sample2@example.com', '佐藤', '', 'https://example.com/video2', '', 'https://example.com/wallpaper2', 'FALSE', 'FALSE'],
+    ['sample3@example.com', '鈴木', 'みほ', '', 'りな', '', 'FALSE', 'FALSE'],
   ].map((row) => row.map(csvEscape).join(',')).join('\n');
 
   const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' });
@@ -647,6 +661,60 @@ function downloadSampleCsv() {
   anchor.download = 'benefit-mail-sample.csv';
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+function downloadUpdatedCsv() {
+  const csv = buildUpdatedCsv();
+  const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = buildUpdatedCsvFileName();
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildUpdatedCsv() {
+  const rows = [
+    ['メールアドレス', '宛名', els.sectionOneTitle.value || '1つ目の特典', '特典リンク', els.sectionTwoTitle.value || '2つ目の特典', '特典リンク', '送信対象', '送信済み'],
+    ...state.rows.map((row) => [
+      row.email,
+      row.recipientName,
+      row.sectionOneName,
+      row.sectionOneLink,
+      row.sectionTwoName,
+      row.sectionTwoLink,
+      row.selected ? 'TRUE' : 'FALSE',
+      row.sent ? 'TRUE' : 'FALSE',
+    ]),
+  ];
+
+  return rows.map((row) => row.map(csvEscape).join(',')).join('\n');
+}
+
+function buildUpdatedCsvFileName() {
+  const baseName = stripFileExtension(state.sourceFileName || 'benefit-mail-list');
+  const timestamp = formatTimestamp(new Date());
+
+  return `${baseName}_${timestamp}.csv`;
+}
+
+function stripFileExtension(fileName) {
+  return fileName.replace(/\.[^.]*$/, '');
+}
+
+function formatTimestamp(date) {
+  const pad = (value) => String(value).padStart(2, '0');
+
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    '-',
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join('');
 }
 
 function splitLines(value) {
