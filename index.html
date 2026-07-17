@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>大会特典送付ツール</title>
+    <title>UNIDOLデジタル特典送付システム（非公式）</title>
     <link rel="stylesheet" href="./styles.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
     <script src="./app.js" defer></script>
@@ -11,8 +11,8 @@
   <body>
     <header class="app-header">
       <div>
-        <p class="eyebrow">Bombs! benefit mailer</p>
-        <h1>大会特典送付ツール</h1>
+        <p class="eyebrow">UNIDOLデジタル特典送付システム（非公式）</p>
+        <h1>デジタル特典送付</h1>
       </div>
       <div class="summary-strip" aria-label="送信件数">
         <span><strong id="totalCount">0</strong>件読込</span>
@@ -41,11 +41,11 @@
           </label>
           <label>
             <span>送信者名</span>
-            <input id="senderName" type="text" value="筑波大学アイドル研究会 Bombs!">
+            <input id="senderName" type="text" value="UNIDOLデジタル特典送付システム">
           </label>
           <label>
             <span>返信先</span>
-            <input id="replyTo" type="email" value="info@bombstsukuba.com">
+            <input id="replyTo" type="email" placeholder="team@example.com">
           </label>
         </div>
       </section>
@@ -58,15 +58,14 @@
 
         <label>
           <span>件名</span>
-          <input id="subject" type="text" value="UNIDOL2026Summer関東予選1日目の特典送付のお知らせ">
+          <input id="subject" type="text" value="UNIDOLデジタル特典送付のお知らせ">
         </label>
 
         <label>
           <span>冒頭文</span>
-          <textarea id="openingText" rows="5">この度はUNIDOL2026 Summer関東予選1日目の応援、誠にありがとうございました。
-チケット特典を本メール下部に添付しておりますので、ぜひご覧ください！
-今後とも、筑波大学アイドル研究会「Bombs!」への温かいご声援を
-何卒よろしくお願い申し上げます。</textarea>
+          <textarea id="openingText" rows="5">この度は応援いただき、誠にありがとうございました。
+デジタル特典を本メール下部に記載しておりますので、ぜひご覧ください。
+今後とも温かいご声援を何卒よろしくお願い申し上げます。</textarea>
         </label>
 
         <div class="field-grid">
@@ -82,8 +81,8 @@
 
         <label>
           <span>署名</span>
-          <textarea id="signatureText" rows="2">筑波大学アイドル研究会 Bombs!
-info@bombstsukuba.com</textarea>
+          <textarea id="signatureText" rows="2">送信チーム名
+連絡先メールアドレス</textarea>
         </label>
       </section>
 

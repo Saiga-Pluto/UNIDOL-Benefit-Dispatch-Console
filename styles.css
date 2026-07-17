@@ -269,6 +269,15 @@ tbody tr.active {
   background: #ecfdf3;
 }
 
+tbody tr.needs-review {
+  background: #fff1f0;
+}
+
+tbody tr.needs-review:hover,
+tbody tr.needs-review.active {
+  background: #ffe4e1;
+}
+
 .check-cell {
   inline-size: 54px;
   text-align: center;
@@ -287,6 +296,13 @@ tbody tr.active {
   font-size: 12px;
   font-weight: 800;
   padding: 3px 8px;
+}
+
+.status-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 150px;
 }
 
 .status.ok {
