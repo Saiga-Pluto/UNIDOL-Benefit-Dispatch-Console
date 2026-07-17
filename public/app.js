@@ -1,5 +1,5 @@
 const MAX_DAILY_SEND = 100;
-const STORAGE_KEY = 'bombs-benefit-mailer-template-v1';
+const STORAGE_KEY = 'unidol-digital-benefit-mailer-template-v2';
 
 const state = {
   rows: [],
@@ -203,7 +203,7 @@ function render() {
 
 function renderCounts() {
   const selected = getSelectedRows();
-  const errors = state.rows.filter((row) => row.validationErrors.length > 0);
+  const errors = state.rows.filter((row) => getRowIssues(row).length > 0);
 
   els.totalCount.textContent = state.rows.length;
   els.selectedCount.textContent = selected.length;
@@ -217,16 +217,13 @@ function renderTable() {
   }
 
   els.recipientTableBody.innerHTML = state.rows.map((row) => {
-    const one = row.sectionOneName && row.sectionOneLink
-      ? `${escapeHtml(row.sectionOneName)} / ${escapeHtml(row.sectionOneLink)}`
-      : '-';
-    const two = row.sectionTwoName && row.sectionTwoLink
-      ? `${escapeHtml(row.sectionTwoName)} / ${escapeHtml(row.sectionTwoLink)}`
-      : '-';
-    const status = getRowStatus(row);
+    const one = formatBenefitCell(row.sectionOneName, row.sectionOneLink);
+    const two = formatBenefitCell(row.sectionTwoName, row.sectionTwoLink);
+    const statuses = getRowStatuses(row);
+    const needsReview = getRowIssues(row).length > 0;
 
     return `
-      <tr class="${row.id === state.activeId ? 'active' : ''}" data-row-id="${row.id}">
+      <tr class="${row.id === state.activeId ? 'active' : ''} ${needsReview ? 'needs-review' : ''}" data-row-id="${row.id}">
         <td class="check-cell">
           <input type="checkbox" data-select-id="${row.id}" ${row.selected ? 'checked' : ''} ${row.validationErrors.length ? 'disabled' : ''}>
         </td>
@@ -235,7 +232,7 @@ function renderTable() {
         <td>${escapeHtml(row.recipientName || '-')}</td>
         <td>${one}</td>
         <td>${two}</td>
-        <td><span class="status ${status.className}">${status.label}</span></td>
+        <td><div class="status-list">${statuses.map((status) => `<span class="status ${status.className}">${escapeHtml(status.label)}</span>`).join('')}</div></td>
       </tr>
     `;
   }).join('');
@@ -298,28 +295,30 @@ function renderSendState() {
   els.sendButton.disabled = !ready;
 }
 
-function getRowStatus(row) {
+function getRowStatuses(row) {
   if (row.sent) {
-    return { label: '送信済み', className: 'ok' };
+    return [{ label: '送信済み', className: 'ok' }];
   }
 
   if (row.error) {
-    return { label: '送信エラー', className: 'error' };
+    return [{ label: '送信エラー', className: 'error' }];
   }
 
-  if (row.validationErrors.length > 0) {
-    return { label: row.validationErrors[0], className: 'error' };
+  const statuses = [];
+
+  row.validationErrors.forEach((label) => {
+    statuses.push({ label, className: 'error' });
+  });
+
+  getBenefitWarnings(row).forEach((label) => {
+    statuses.push({ label, className: 'warn' });
+  });
+
+  if (statuses.length > 0) {
+    return statuses;
   }
 
-  if (!row.sectionOneName || !row.sectionOneLink) {
-    return { label: '1つ目なし', className: 'warn' };
-  }
-
-  if (!row.sectionTwoName || !row.sectionTwoLink) {
-    return { label: '2つ目なし', className: 'warn' };
-  }
-
-  return { label: '送信可', className: 'ok' };
+  return [{ label: '送信可', className: 'ok' }];
 }
 
 function buildMessage(row) {
@@ -328,8 +327,8 @@ function buildMessage(row) {
     ...splitLines(els.openingText.value),
   ];
 
-  appendPairSection(sections, els.sectionOneTitle.value, row.sectionOneName, row.sectionOneLink);
-  appendPairSection(sections, els.sectionTwoTitle.value, row.sectionTwoName, row.sectionTwoLink);
+  appendLinkSection(sections, els.sectionOneTitle.value, row.sectionOneName, row.sectionOneLink);
+  appendLinkSection(sections, els.sectionTwoTitle.value, row.sectionTwoName, row.sectionTwoLink);
   sections.push(...splitLines(els.signatureText.value));
 
   return {
@@ -340,12 +339,18 @@ function buildMessage(row) {
   };
 }
 
-function appendPairSection(sections, title, firstLine, secondLine) {
-  if (!cleanCell(title) || !cleanCell(firstLine) || !cleanCell(secondLine)) {
+function appendLinkSection(sections, title, subName, link) {
+  if (!cleanCell(title) || !cleanCell(link)) {
     return;
   }
 
-  sections.push(`[${cleanCell(title)}]`, cleanCell(firstLine), cleanCell(secondLine));
+  sections.push(`[${cleanCell(title)}]`);
+
+  if (cleanCell(subName)) {
+    sections.push(cleanCell(subName));
+  }
+
+  sections.push(cleanCell(link));
 }
 
 function selectValidRows() {
@@ -436,6 +441,32 @@ function validateRow(row) {
   return errors;
 }
 
+function getRowIssues(row) {
+  return [
+    ...row.validationErrors,
+    ...getBenefitWarnings(row),
+  ];
+}
+
+function getBenefitWarnings(row) {
+  const warnings = [];
+
+  appendBenefitWarning(warnings, '1つ目', row.sectionOneName, row.sectionOneLink);
+  appendBenefitWarning(warnings, '2つ目', row.sectionTwoName, row.sectionTwoLink);
+
+  return warnings;
+}
+
+function appendBenefitWarning(warnings, label, subName, link) {
+  if (!cleanCell(link)) {
+    warnings.push(`${label}リンクなし`);
+  }
+
+  if (!cleanCell(subName)) {
+    warnings.push(`${label}サブ名なし`);
+  }
+}
+
 function saveTemplate() {
   const data = {
     apiUrl: els.apiUrl.value,
@@ -475,10 +506,11 @@ function downloadSampleCsv() {
   const csv = [
     ['メールアドレス', '宛名', 'メッセージ動画', '特典リンク', '待ち受け画像', '特典リンク', '送信対象'],
     ['sample@example.com', '山田', 'あやか', 'https://example.com/video', 'りな', 'https://example.com/wallpaper', 'TRUE'],
-    ['sample2@example.com', '佐藤', 'みほ', 'https://example.com/video2', '', '', 'FALSE'],
+    ['sample2@example.com', '佐藤', '', 'https://example.com/video2', '', 'https://example.com/wallpaper2', 'FALSE'],
+    ['sample3@example.com', '鈴木', 'みほ', '', 'りな', '', 'FALSE'],
   ].map((row) => row.map(csvEscape).join(',')).join('\n');
 
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
@@ -497,6 +529,20 @@ function parseCheckbox(value) {
 
 function cleanCell(value) {
   return String(value ?? '').trim();
+}
+
+function formatBenefitCell(subName, link) {
+  const lines = [];
+
+  if (cleanCell(subName)) {
+    lines.push(escapeHtml(subName));
+  }
+
+  if (cleanCell(link)) {
+    lines.push(escapeHtml(link));
+  }
+
+  return lines.length > 0 ? lines.join('<br>') : '-';
 }
 
 function csvEscape(value) {

@@ -1,13 +1,13 @@
 const CONFIG = {
   maxMessagesPerRequest: 100,
-  defaultSenderName: '筑波大学アイドル研究会 Bombs!',
-  defaultReplyTo: 'info@bombstsukuba.com',
+  defaultSenderName: 'UNIDOLデジタル特典送付システム',
+  defaultReplyTo: '',
 };
 
 function doGet() {
   return jsonResponse_({
     ok: true,
-    name: 'Bombs benefit mail send API',
+    name: 'UNIDOL digital benefit mail send API',
   });
 }
 
@@ -72,10 +72,7 @@ function sendOne_(message, senderName, replyTo) {
       throw new Error('本文が空です。');
     }
 
-    GmailApp.sendEmail(email, subject, body, {
-      name: senderName,
-      replyTo,
-    });
+    GmailApp.sendEmail(email, subject, body, buildSendOptions_(senderName, replyTo));
 
     return {
       ok: true,
@@ -90,6 +87,18 @@ function sendOne_(message, senderName, replyTo) {
       error: error.message,
     };
   }
+}
+
+function buildSendOptions_(senderName, replyTo) {
+  const options = {
+    name: senderName,
+  };
+
+  if (replyTo) {
+    options.replyTo = replyTo;
+  }
+
+  return options;
 }
 
 function jsonResponse_(data) {

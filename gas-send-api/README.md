@@ -17,8 +17,8 @@
 
 ```json
 {
-  "senderName": "筑波大学アイドル研究会 Bombs!",
-  "replyTo": "info@bombstsukuba.com",
+  "senderName": "UNIDOLデジタル特典送付システム",
+  "replyTo": "team@example.com",
   "messages": [
     {
       "rowNumber": 2,

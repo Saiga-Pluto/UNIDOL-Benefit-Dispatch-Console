@@ -1,7 +1,7 @@
 const CONFIG = {
-  subject: 'UNIDOL2026Summer関東予選1日目の特典送付のお知らせ',
-  senderName: '筑波大学アイドル研究会 Bombs!',
-  replyTo: 'info@bombstsukuba.com',
+  subject: 'UNIDOLデジタル特典送付のお知らせ',
+  senderName: 'UNIDOLデジタル特典送付システム',
+  replyTo: '',
   columns: {
     email: 1,
     name: 2,
@@ -114,10 +114,7 @@ function sendBenefitEmails() {
     try {
       const message = buildMessageForRow_(sheet, row);
 
-      GmailApp.sendEmail(message.email, CONFIG.subject, message.body, {
-        name: CONFIG.senderName,
-        replyTo: CONFIG.replyTo,
-      });
+      GmailApp.sendEmail(message.email, CONFIG.subject, message.body, buildSendOptions_());
 
       sheet.getRange(row, CONFIG.columns.status).setValue(CONFIG.statusSent);
       sheet.getRange(row, CONFIG.columns.sentAt).setValue(new Date());
@@ -159,16 +156,15 @@ function buildMessageForRow_(sheet, row) {
 
   const sections = [
     `${recipientName}様`,
-    'この度はUNIDOL2026 Summer関東予選1日目の応援、誠にありがとうございました。',
-    'チケット特典を本メール下部に添付しておりますので、ぜひご覧ください！',
-    '今後とも、筑波大学アイドル研究会「Bombs!」への温かいご声援を',
-    '何卒よろしくお願い申し上げます。',
+    'この度は応援いただき、誠にありがとうございました。',
+    'デジタル特典を本メール下部に記載しておりますので、ぜひご覧ください。',
+    '今後とも温かいご声援を何卒よろしくお願い申し上げます。',
   ];
 
-  appendRequiredPairSection_(sections, videoTitle, videoName, videoLink);
-  appendRequiredPairSection_(sections, wallpaperTitle, wallpaperName, wallpaperLink);
+  appendLinkSection_(sections, videoTitle, videoName, videoLink);
+  appendLinkSection_(sections, wallpaperTitle, wallpaperName, wallpaperLink);
 
-  sections.push('筑波大学アイドル研究会 Bombs!', CONFIG.replyTo);
+  sections.push('送信チーム名', '連絡先メールアドレス');
 
   return {
     email,
@@ -176,12 +172,30 @@ function buildMessageForRow_(sheet, row) {
   };
 }
 
-function appendRequiredPairSection_(sections, title, firstLine, secondLine) {
-  if (!title || !firstLine || !secondLine) {
+function buildSendOptions_() {
+  const options = {
+    name: CONFIG.senderName,
+  };
+
+  if (CONFIG.replyTo) {
+    options.replyTo = CONFIG.replyTo;
+  }
+
+  return options;
+}
+
+function appendLinkSection_(sections, title, subName, link) {
+  if (!title || !link) {
     return;
   }
 
-  sections.push(`[${title}]`, firstLine, secondLine);
+  sections.push(`[${title}]`);
+
+  if (subName) {
+    sections.push(subName);
+  }
+
+  sections.push(link);
 }
 
 function ensureControlHeaders_(sheet) {
