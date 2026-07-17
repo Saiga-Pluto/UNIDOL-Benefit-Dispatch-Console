@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>UNIDOLデジタル特典送付システム（非公式）</title>
+    <title>UNIDOL Benefit Dispatch Console</title>
     <link rel="stylesheet" href="./styles.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
     <script src="./app.js" defer></script>
@@ -12,7 +12,7 @@
     <header class="app-header">
       <div>
         <p class="eyebrow">UNIDOLデジタル特典送付システム（非公式）</p>
-        <h1>デジタル特典送付</h1>
+        <h1>UNIDOL Benefit Dispatch Console</h1>
       </div>
       <div class="summary-strip" aria-label="送信件数">
         <span><strong id="totalCount">0</strong>件読込</span>
@@ -38,10 +38,11 @@
           <label>
             <span>送信用GAS API URL</span>
             <input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+            <small>gas-send-apiをウェブアプリとしてデプロイしたときに発行されるURLです。</small>
           </label>
           <label>
             <span>送信者名</span>
-            <input id="senderName" type="text" value="UNIDOLデジタル特典送付システム">
+            <input id="senderName" type="text" placeholder="A大学アイコピチーム">
           </label>
           <label>
             <span>返信先</span>
@@ -81,8 +82,7 @@
 
         <label>
           <span>署名</span>
-          <textarea id="signatureText" rows="2">送信チーム名
-連絡先メールアドレス</textarea>
+          <textarea id="signatureText" rows="2" placeholder="A大学アイコピチーム&#10;team@example.com"></textarea>
         </label>
       </section>
 
