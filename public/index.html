@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>大会特典送付ツール</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Bombs! benefit mailer</p>
+        <h1>大会特典送付ツール</h1>
+      </div>
+      <div class="summary-strip" aria-label="送信件数">
+        <span><strong id="totalCount">0</strong>件読込</span>
+        <span><strong id="selectedCount">0</strong>件選択</span>
+        <span><strong id="errorCount">0</strong>件要確認</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel setup-panel" aria-labelledby="setupHeading">
+        <div class="panel-header">
+          <h2 id="setupHeading">シート取込</h2>
+          <button class="secondary" id="downloadSampleButton" type="button">サンプルCSV</button>
+        </div>
+
+        <label class="drop-zone" for="sheetFile">
+          <input id="sheetFile" type="file" accept=".csv,.tsv,.xlsx,.xls">
+          <span>CSV / TSV / Excelをアップロード</span>
+          <small>A-F列を読み込み、G列のTRUE/FALSEを選択状態として扱います。</small>
+        </label>
+
+        <div class="field-grid">
+          <label>
+            <span>送信用GAS API URL</span>
+            <input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+          </label>
+          <label>
+            <span>送信者名</span>
+            <input id="senderName" type="text" value="筑波大学アイドル研究会 Bombs!">
+          </label>
+          <label>
+            <span>返信先</span>
+            <input id="replyTo" type="email" value="info@bombstsukuba.com">
+          </label>
+        </div>
+      </section>
+
+      <section class="panel editor-panel" aria-labelledby="editorHeading">
+        <div class="panel-header">
+          <h2 id="editorHeading">メール編集</h2>
+          <button class="secondary" id="saveTemplateButton" type="button">設定を保存</button>
+        </div>
+
+        <label>
+          <span>件名</span>
+          <input id="subject" type="text" value="UNIDOL2026Summer関東予選1日目の特典送付のお知らせ">
+        </label>
+
+        <label>
+          <span>冒頭文</span>
+          <textarea id="openingText" rows="5">この度はUNIDOL2026 Summer関東予選1日目の応援、誠にありがとうございました。
+チケット特典を本メール下部に添付しておりますので、ぜひご覧ください！
+今後とも、筑波大学アイドル研究会「Bombs!」への温かいご声援を
+何卒よろしくお願い申し上げます。</textarea>
+        </label>
+
+        <div class="field-grid">
+          <label>
+            <span>1つ目の特典見出し</span>
+            <input id="sectionOneTitle" type="text" value="メッセージ動画">
+          </label>
+          <label>
+            <span>2つ目の特典見出し</span>
+            <input id="sectionTwoTitle" type="text" value="待ち受け画像">
+          </label>
+        </div>
+
+        <label>
+          <span>署名</span>
+          <textarea id="signatureText" rows="2">筑波大学アイドル研究会 Bombs!
+info@bombstsukuba.com</textarea>
+        </label>
+      </section>
+
+      <section class="panel recipients-panel" aria-labelledby="recipientsHeading">
+        <div class="panel-header">
+          <h2 id="recipientsHeading">送信対象</h2>
+          <div class="actions">
+            <button class="secondary" id="selectValidButton" type="button">有効な行を選択</button>
+            <button class="secondary" id="clearSelectionButton" type="button">選択解除</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="check-cell">送信</th>
+                <th>行</th>
+                <th>メール</th>
+                <th>宛名</th>
+                <th>1つ目</th>
+                <th>2つ目</th>
+                <th>状態</th>
+              </tr>
+            </thead>
+            <tbody id="recipientTableBody">
+              <tr>
+                <td colspan="7" class="empty-state">ファイルをアップロードしてください。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="panel preview-panel" aria-labelledby="previewHeading">
+        <div class="panel-header">
+          <h2 id="previewHeading">プレビュー</h2>
+          <span id="previewTarget" class="pill">未選択</span>
+        </div>
+
+        <div class="preview-meta">
+          <span>件名</span>
+          <strong id="previewSubject">-</strong>
+        </div>
+        <pre id="previewBody">左の表から行を選択してください。</pre>
+
+        <div class="send-box">
+          <p id="limitMessage">100件まで選択できます。</p>
+          <button id="sendButton" type="button" disabled>チェック済みを送信</button>
+        </div>
+      </aside>
+    </main>
+
+    <dialog id="sendDialog">
+      <form method="dialog">
+        <h2>送信確認</h2>
+        <p id="sendDialogText"></p>
+        <menu>
+          <button class="secondary" value="cancel">キャンセル</button>
+          <button id="confirmSendButton" value="confirm">送信する</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
