@@ -107,11 +107,11 @@ GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下
 
 | 項目 | URL |
 | --- | --- |
-| アプリのホームページ | `https://saiga-pluto.github.io/bombs-benefit-mailer-web/` |
-| プライバシーポリシーURL | `https://saiga-pluto.github.io/bombs-benefit-mailer-web/privacy.html` |
-| 利用規約URL | `https://saiga-pluto.github.io/bombs-benefit-mailer-web/terms.html` |
+| アプリのホームページ | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` |
+| プライバシーポリシーURL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/privacy.html` |
+| 利用規約URL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/terms.html` |
 
-`承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/bombs-benefit-mailer-web/` はパスを含むため、この欄には入れられません。
+`承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` はパスを含むため、この欄には入れられません。
 
 ### 注意点
 
@@ -142,7 +142,7 @@ GoogleのOAuth確認申請では、スコープごとに利用目的を説明し
 公開ページは `public/privacy.html` にあります。OAuth同意画面の `Privacy Policy URL` には以下を設定してください。
 
 ```text
-https://saiga-pluto.github.io/bombs-benefit-mailer-web/privacy.html
+https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/privacy.html
 ```
 
 掲載内容:
@@ -181,7 +181,7 @@ UNIDOL Benefit Dispatch Console（以下「本アプリ」）は、ユーザー�
 公開ページは `public/terms.html` にあります。OAuth同意画面の `Terms of Service URL` には以下を設定してください。
 
 ```text
-https://saiga-pluto.github.io/bombs-benefit-mailer-web/terms.html
+https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/terms.html
 ```
 
 掲載内容:
