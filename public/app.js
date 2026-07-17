@@ -17,7 +17,6 @@ const els = {
   sheetFile: document.getElementById('sheetFile'),
   authorizeButton: document.getElementById('authorizeButton'),
   senderName: document.getElementById('senderName'),
-  replyTo: document.getElementById('replyTo'),
   subject: document.getElementById('subject'),
   openingText: document.getElementById('openingText'),
   sectionOneTitle: document.getElementById('sectionOneTitle'),
@@ -466,7 +465,6 @@ function appendBenefitWarning(warnings, label, subName, link) {
 function saveTemplate() {
   const data = {
     senderName: els.senderName.value,
-    replyTo: els.replyTo.value,
     subject: els.subject.value,
     openingText: els.openingText.value,
     sectionOneTitle: els.sectionOneTitle.value,
@@ -592,14 +590,9 @@ function buildRawEmail(message) {
     ['Content-Transfer-Encoding', '8bit'],
   ];
   const senderName = els.senderName.value.trim();
-  const replyTo = els.replyTo.value.trim();
 
   if (state.signedInEmail) {
     headers.unshift(['From', formatAddress(senderName, state.signedInEmail)]);
-  }
-
-  if (replyTo) {
-    headers.push(['Reply-To', replyTo]);
   }
 
   return base64UrlEncode(`${headers.map(([key, value]) => `${key}: ${encodeHeaderValue(value)}`).join('\r\n')}\r\n\r\n${message.body}`);
