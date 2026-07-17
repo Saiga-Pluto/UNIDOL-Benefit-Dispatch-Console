@@ -217,7 +217,9 @@ function renderTable() {
   }
 
   els.recipientTableBody.innerHTML = state.rows.map((row) => {
-    const one = [row.sectionOneName, row.sectionOneLink].filter(Boolean).join(' / ') || '-';
+    const one = row.sectionOneName && row.sectionOneLink
+      ? `${escapeHtml(row.sectionOneName)} / ${escapeHtml(row.sectionOneLink)}`
+      : '-';
     const two = row.sectionTwoName && row.sectionTwoLink
       ? `${escapeHtml(row.sectionTwoName)} / ${escapeHtml(row.sectionTwoLink)}`
       : '-';
@@ -231,7 +233,7 @@ function renderTable() {
         <td>${row.rowNumber}</td>
         <td>${escapeHtml(row.email || '-')}</td>
         <td>${escapeHtml(row.recipientName || '-')}</td>
-        <td>${escapeHtml(one)}</td>
+        <td>${one}</td>
         <td>${two}</td>
         <td><span class="status ${status.className}">${status.label}</span></td>
       </tr>
@@ -309,6 +311,10 @@ function getRowStatus(row) {
     return { label: row.validationErrors[0], className: 'error' };
   }
 
+  if (!row.sectionOneName || !row.sectionOneLink) {
+    return { label: '1つ目なし', className: 'warn' };
+  }
+
   if (!row.sectionTwoName || !row.sectionTwoLink) {
     return { label: '2つ目なし', className: 'warn' };
   }
@@ -322,11 +328,7 @@ function buildMessage(row) {
     ...splitLines(els.openingText.value),
   ];
 
-  appendLooseSection(sections, els.sectionOneTitle.value, [
-    row.sectionOneName,
-    row.sectionOneLink,
-  ]);
-
+  appendPairSection(sections, els.sectionOneTitle.value, row.sectionOneName, row.sectionOneLink);
   appendPairSection(sections, els.sectionTwoTitle.value, row.sectionTwoName, row.sectionTwoLink);
   sections.push(...splitLines(els.signatureText.value));
 
@@ -336,16 +338,6 @@ function buildMessage(row) {
     subject: els.subject.value.trim(),
     body: sections.join('\n'),
   };
-}
-
-function appendLooseSection(sections, title, values) {
-  const bodyLines = values.map(cleanCell).filter(Boolean);
-
-  if (!cleanCell(title) || bodyLines.length === 0) {
-    return;
-  }
-
-  sections.push(`[${cleanCell(title)}]`, ...bodyLines);
 }
 
 function appendPairSection(sections, title, firstLine, secondLine) {

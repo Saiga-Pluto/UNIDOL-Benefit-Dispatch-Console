@@ -165,7 +165,7 @@ function buildMessageForRow_(sheet, row) {
     '何卒よろしくお願い申し上げます。',
   ];
 
-  appendBenefitSection_(sections, videoTitle, [videoName, videoLink]);
+  appendRequiredPairSection_(sections, videoTitle, videoName, videoLink);
   appendRequiredPairSection_(sections, wallpaperTitle, wallpaperName, wallpaperLink);
 
   sections.push('筑波大学アイドル研究会 Bombs!', CONFIG.replyTo);
@@ -174,16 +174,6 @@ function buildMessageForRow_(sheet, row) {
     email,
     body: sections.join('\n'),
   };
-}
-
-function appendBenefitSection_(sections, title, values) {
-  const bodyLines = values.filter((value) => value);
-
-  if (!title || bodyLines.length === 0) {
-    return;
-  }
-
-  sections.push(`[${title}]`, ...bodyLines);
 }
 
 function appendRequiredPairSection_(sections, title, firstLine, secondLine) {
