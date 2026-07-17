@@ -46,9 +46,32 @@ python3 -m http.server 5173 --directory public
 
 ## GitHub Pages
 
-GitHub Pagesで公開する場合は、リポジトリの Pages 設定で公開元を `main` ブランチの `/public` にしてください。
+GitHub Pagesで公開する場合は、リポジトリの Pages 設定で公開元を対象ブランチの `/public` にしてください。
 
-メール送信には `gas-send-api/` のGASを別途デプロイし、Webアプリ画面の「送信用GAS API URL」に貼り付けます。
+`main` ブランチのGAS API方式では、`gas-send-api/` のGASを別途デプロイし、Webアプリ画面の「送信用GAS API URL」に貼り付けます。
+
+## Gmail APIログイン送信の実験ブランチ
+
+`experiment-gmail-api-login` ブランチでは、送信用GAS API URLを使わず、Googleログインで取得したアクセストークンを使ってGmail APIから送信します。
+
+この方式では、送信者はログインしたGoogleアカウントのGmailアドレスになります。Webアプリに必要なのは、Google Cloudで作成したOAuthクライアントIDです。
+
+### 必要なGoogle Cloud設定
+
+1. Google Cloud Consoleでプロジェクトを作成する。
+2. Gmail APIを有効化する。
+3. OAuth同意画面を設定する。
+4. OAuthクライアントIDを作成する。
+5. アプリケーションの種類は `ウェブ アプリケーション` を選ぶ。
+6. `承認済みの JavaScript 生成元` に公開URLを追加する。
+   ローカル確認では `http://127.0.0.1:5173` などを追加する。
+7. 作成された `クライアントID` をWebアプリの `Google OAuth クライアントID` に貼る。
+
+### 注意点
+
+この方式では `https://www.googleapis.com/auth/gmail.send` の権限を使います。運用対象が広い場合、GoogleのOAuth同意画面やアプリ確認が必要になる可能性があります。
+
+既存のGAS API URL方式は `main` ブランチに残しています。
 
 ## 送信用GAS API URL
 

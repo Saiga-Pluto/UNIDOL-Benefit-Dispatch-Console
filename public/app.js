@@ -1,15 +1,21 @@
 const MAX_DAILY_SEND = 100;
-const STORAGE_KEY = 'unidol-benefit-dispatch-console-template-v3';
+const STORAGE_KEY = 'unidol-benefit-dispatch-console-gmail-api-experiment-v1';
+const GMAIL_SEND_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
+const USERINFO_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email';
 
 const state = {
   rows: [],
   activeId: null,
   sending: false,
+  accessToken: '',
+  tokenClient: null,
+  signedInEmail: '',
 };
 
 const els = {
   sheetFile: document.getElementById('sheetFile'),
-  apiUrl: document.getElementById('apiUrl'),
+  oauthClientId: document.getElementById('oauthClientId'),
+  authorizeButton: document.getElementById('authorizeButton'),
   senderName: document.getElementById('senderName'),
   replyTo: document.getElementById('replyTo'),
   subject: document.getElementById('subject'),
@@ -24,6 +30,7 @@ const els = {
   previewTarget: document.getElementById('previewTarget'),
   previewSubject: document.getElementById('previewSubject'),
   previewBody: document.getElementById('previewBody'),
+  authMessage: document.getElementById('authMessage'),
   limitMessage: document.getElementById('limitMessage'),
   sendButton: document.getElementById('sendButton'),
   sendDialog: document.getElementById('sendDialog'),
@@ -47,12 +54,13 @@ function bindEvents() {
   els.saveTemplateButton.addEventListener('click', saveTemplate);
   els.selectValidButton.addEventListener('click', selectValidRows);
   els.clearSelectionButton.addEventListener('click', clearSelection);
+  els.authorizeButton.addEventListener('click', authorizeGmail);
   els.sendButton.addEventListener('click', openSendDialog);
   els.confirmSendButton.addEventListener('click', sendSelectedRows);
   els.downloadSampleButton.addEventListener('click', downloadSampleCsv);
 
   [
-    els.apiUrl,
+    els.oauthClientId,
     els.subject,
     els.openingText,
     els.sectionOneTitle,
@@ -278,14 +286,20 @@ function renderSendState() {
   const ready = selected.length > 0
     && selected.length <= MAX_DAILY_SEND
     && invalidSelected.length === 0
-    && Boolean(els.apiUrl.value.trim())
+    && Boolean(state.accessToken)
     && Boolean(els.subject.value.trim())
     && !state.sending;
 
+  if (state.signedInEmail) {
+    els.authMessage.textContent = `${state.signedInEmail} で接続中です。`;
+  } else {
+    els.authMessage.textContent = 'Google OAuth クライアントIDを入力して接続してください。';
+  }
+
   if (selected.length > MAX_DAILY_SEND) {
     els.limitMessage.textContent = `選択中: ${selected.length}件。100件以内に減らしてください。`;
-  } else if (!els.apiUrl.value.trim()) {
-    els.limitMessage.textContent = '送信用GAS API URLを入力してください。';
+  } else if (!state.accessToken) {
+    els.limitMessage.textContent = 'Googleで接続してください。';
   } else if (!els.subject.value.trim()) {
     els.limitMessage.textContent = '件名を入力してください。';
   } else {
@@ -375,29 +389,18 @@ function openSendDialog() {
 
 async function sendSelectedRows() {
   const messages = getSelectedRows().map(buildMessage);
-  const apiUrl = els.apiUrl.value.trim();
 
   state.sending = true;
   renderSendState();
 
   try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        senderName: els.senderName.value.trim(),
-        replyTo: els.replyTo.value.trim(),
-        messages,
-      }),
-    });
+    const results = [];
 
-    const result = await response.json();
-
-    if (!response.ok || !result.ok) {
-      throw new Error(result.error || '送信APIでエラーが発生しました。');
+    for (const message of messages) {
+      results.push(await sendMessageWithGmailApi(message));
     }
 
-    applySendResults(result.results || []);
+    applySendResults(results);
     showToast('送信処理が完了しました。');
   } catch (error) {
     showToast(error.message);
@@ -460,7 +463,7 @@ function appendBenefitWarning(warnings, label, subName, link) {
 
 function saveTemplate() {
   const data = {
-    apiUrl: els.apiUrl.value,
+    oauthClientId: els.oauthClientId.value,
     senderName: els.senderName.value,
     replyTo: els.replyTo.value,
     subject: els.subject.value,
@@ -491,6 +494,145 @@ function loadSavedTemplate() {
   } catch {
     localStorage.removeItem(STORAGE_KEY);
   }
+}
+
+function authorizeGmail() {
+  const clientId = els.oauthClientId.value.trim();
+
+  if (!clientId) {
+    showToast('Google OAuth クライアントIDを入力してください。');
+    return;
+  }
+
+  if (!window.google || !google.accounts || !google.accounts.oauth2) {
+    showToast('Google Identity Servicesを読み込めませんでした。');
+    return;
+  }
+
+  state.tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: `${GMAIL_SEND_SCOPE} ${USERINFO_EMAIL_SCOPE}`,
+    callback: async (response) => {
+      if (response.error) {
+        showToast(response.error);
+        return;
+      }
+
+      state.accessToken = response.access_token;
+      await loadSignedInEmail();
+      renderSendState();
+    },
+  });
+
+  state.tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function loadSignedInEmail() {
+  try {
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${state.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    const profile = await response.json();
+    state.signedInEmail = profile.email || '';
+  } catch {
+    state.signedInEmail = '';
+  }
+}
+
+async function sendMessageWithGmailApi(message) {
+  try {
+    const raw = buildRawEmail(message);
+    const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${state.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ raw }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error?.message || 'Gmail APIで送信に失敗しました。');
+    }
+
+    return {
+      ok: true,
+      rowNumber: message.rowNumber,
+      email: message.email,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      rowNumber: message.rowNumber,
+      email: message.email,
+      error: error.message,
+    };
+  }
+}
+
+function buildRawEmail(message) {
+  const headers = [
+    ['To', message.email],
+    ['Subject', message.subject],
+    ['MIME-Version', '1.0'],
+    ['Content-Type', 'text/plain; charset=UTF-8'],
+    ['Content-Transfer-Encoding', '8bit'],
+  ];
+  const senderName = els.senderName.value.trim();
+  const replyTo = els.replyTo.value.trim();
+
+  if (state.signedInEmail) {
+    headers.unshift(['From', formatAddress(senderName, state.signedInEmail)]);
+  }
+
+  if (replyTo) {
+    headers.push(['Reply-To', replyTo]);
+  }
+
+  return base64UrlEncode(`${headers.map(([key, value]) => `${key}: ${encodeHeaderValue(value)}`).join('\r\n')}\r\n\r\n${message.body}`);
+}
+
+function formatAddress(name, email) {
+  if (!name) {
+    return email;
+  }
+
+  return `${encodeMimeWord(name)} <${email}>`;
+}
+
+function encodeHeaderValue(value) {
+  return /[^\x20-\x7e]/.test(value) ? encodeMimeWord(value) : value;
+}
+
+function encodeMimeWord(value) {
+  return `=?UTF-8?B?${base64EncodeUtf8(value)}?=`;
+}
+
+function base64EncodeUtf8(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return btoa(binary);
+}
+
+function base64UrlEncode(value) {
+  return base64EncodeUtf8(value)
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
+    .replaceAll('=', '');
 }
 
 function downloadSampleCsv() {
