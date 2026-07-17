@@ -1,5 +1,5 @@
 const MAX_DAILY_SEND = 100;
-const STORAGE_KEY = 'unidol-digital-benefit-mailer-template-v2';
+const STORAGE_KEY = 'unidol-benefit-dispatch-console-template-v3';
 
 const state = {
   rows: [],
@@ -203,7 +203,7 @@ function render() {
 
 function renderCounts() {
   const selected = getSelectedRows();
-  const errors = state.rows.filter((row) => getRowIssues(row).length > 0);
+  const errors = state.rows.filter((row) => row.validationErrors.length > 0);
 
   els.totalCount.textContent = state.rows.length;
   els.selectedCount.textContent = selected.length;
@@ -220,7 +220,7 @@ function renderTable() {
     const one = formatBenefitCell(row.sectionOneName, row.sectionOneLink);
     const two = formatBenefitCell(row.sectionTwoName, row.sectionTwoLink);
     const statuses = getRowStatuses(row);
-    const needsReview = getRowIssues(row).length > 0;
+    const needsReview = row.validationErrors.length > 0;
 
     return `
       <tr class="${row.id === state.activeId ? 'active' : ''} ${needsReview ? 'needs-review' : ''}" data-row-id="${row.id}">
@@ -430,8 +430,6 @@ function validateRow(row) {
 
   if (!row.email) {
     errors.push('メールなし');
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
-    errors.push('メール不正');
   }
 
   if (!row.recipientName) {
@@ -439,13 +437,6 @@ function validateRow(row) {
   }
 
   return errors;
-}
-
-function getRowIssues(row) {
-  return [
-    ...row.validationErrors,
-    ...getBenefitWarnings(row),
-  ];
 }
 
 function getBenefitWarnings(row) {

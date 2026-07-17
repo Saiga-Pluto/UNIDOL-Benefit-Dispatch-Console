@@ -201,6 +201,7 @@ h2 {
 }
 
 .drop-zone small,
+label small,
 label span,
 .preview-meta span {
   color: var(--muted);
