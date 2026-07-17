@@ -111,6 +111,8 @@ GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下
 | プライバシーポリシーURL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/privacy.html` |
 | 利用規約URL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/terms.html` |
 
+アプリのホームページには `/index.html` を付けず、上記の末尾 `/` のURLを設定します。
+
 `承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` はパスを含むため、この欄には入れられません。
 
 ### OAuthブランディング設定で使うロゴ
