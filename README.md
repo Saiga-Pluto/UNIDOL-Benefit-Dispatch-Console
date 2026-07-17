@@ -67,10 +67,10 @@ GitHub Pagesの画面で `/public` が選択肢に出ない場合があります
 
 ユーザーにOAuthクライアントIDを入力させないため、クライアントIDはアプリ側に固定します。
 
-`public/app.js` の以下を、Google Cloudで作成したOAuthクライアントIDに差し替えてください。
+`public/app.js` の以下に、Google Cloudで作成したOAuthクライアントIDを固定しています。
 
 ```js
-const GOOGLE_OAUTH_CLIENT_ID = 'REPLACE_WITH_YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
+const GOOGLE_OAUTH_CLIENT_ID = '559908386582-ik6d0htjn9khesahdb052aif7qei08va.apps.googleusercontent.com';
 ```
 
 ### 必要なGoogle Cloud設定
