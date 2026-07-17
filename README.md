@@ -113,6 +113,16 @@ GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下
 
 `承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` はパスを含むため、この欄には入れられません。
 
+### OAuthブランディング設定で使うロゴ
+
+アプリ用ロゴは `public/logo.svg` にあります。GitHub Pages公開後のURLは以下です。
+
+```text
+https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/logo.svg
+```
+
+Google CloudのOAuthブランディング画面でPNG/JPG形式を求められる場合は、このSVGを `512x512px` のPNGに書き出して使用してください。ロゴは、特定大学チームやUNIDOL公式のロゴと誤認されないよう、封筒とチケットを組み合わせたツール用の抽象アイコンにしています。
+
 ### 注意点
 
 この方式では `https://www.googleapis.com/auth/gmail.send` の権限を使います。運用対象が広い場合、GoogleのOAuth同意画面やアプリ確認が必要になる可能性があります。

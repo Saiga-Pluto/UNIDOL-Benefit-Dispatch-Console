@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>UNIDOL Benefit Dispatch Console</title>
+    <link rel="icon" href="./logo.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./styles.css">
     <script src="https://accounts.google.com/gsi/client" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
@@ -11,9 +12,12 @@
   </head>
   <body>
     <header class="app-header">
-      <div>
-        <p class="eyebrow">UNIDOLデジタル特典送付システム（非公式）</p>
-        <h1>UNIDOL Benefit Dispatch Console</h1>
+      <div class="brand-lockup">
+        <img class="app-logo" src="./logo.svg" alt="" aria-hidden="true">
+        <div>
+          <p class="eyebrow">UNIDOLデジタル特典送付システム（非公式）</p>
+          <h1>UNIDOL Benefit Dispatch Console</h1>
+        </div>
       </div>
       <div class="summary-strip" aria-label="送信件数">
         <span><strong id="totalCount">0</strong>件読込</span>
