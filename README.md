@@ -107,11 +107,11 @@ GitHub Pagesへ公開したあと、Google CloudのOAuth同意画面には以下
 
 | 項目 | URL |
 | --- | --- |
-| アプリのホームページ | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` |
+| アプリのホームページ | `https://saiga-pluto.github.io/` |
 | プライバシーポリシーURL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/privacy.html` |
 | 利用規約URL | `https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/terms.html` |
 
-アプリのホームページには `/index.html` を付けず、上記の末尾 `/` のURLを設定します。
+アプリのホームページには、Search Consoleで所有確認した `https://saiga-pluto.github.io/` を設定します。このページには、アプリ名、アプリの目的、プライバシーポリシー、利用規約、実際のアプリへのリンクを掲載しています。
 
 `承認済みの JavaScript 生成元` には、パスなしの `https://saiga-pluto.github.io` を設定します。`https://saiga-pluto.github.io/UNIDOL-Benefit-Dispatch-Console/` はパスを含むため、この欄には入れられません。
 
