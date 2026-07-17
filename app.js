@@ -127,6 +127,7 @@ function loadRows(rawRows) {
   }
 
   const header = normalized[0];
+  const sentColumnIndex = findSentColumnIndex(header);
 
   if (header[2]) {
     els.sectionOneTitle.value = header[2];
@@ -146,8 +147,8 @@ function loadRows(rawRows) {
       sectionOneLink: row[3],
       sectionTwoName: row[4],
       sectionTwoLink: row[5],
-      selected: parseCheckbox(row[6]),
-      sent: parseCheckbox(row[7]),
+      selected: false,
+      sent: sentColumnIndex >= 0 ? parseCheckbox(row[sentColumnIndex]) : false,
       error: '',
     };
 
@@ -344,7 +345,7 @@ function getRowStatuses(row) {
     return statuses;
   }
 
-  return [{ label: '送信可', className: 'ok' }];
+  return [{ label: '入力完了', className: 'ok' }];
 }
 
 function buildMessage(row) {
@@ -648,10 +649,10 @@ function base64UrlEncode(value) {
 
 function downloadSampleCsv() {
   const csv = [
-    ['メールアドレス', '宛名', 'メッセージ動画', '特典リンク', '待ち受け画像', '特典リンク', '送信対象', '送信済み'],
-    ['sample@example.com', '山田', 'あやか', 'https://example.com/video', 'りな', 'https://example.com/wallpaper', 'TRUE', 'FALSE'],
-    ['sample2@example.com', '佐藤', '', 'https://example.com/video2', '', 'https://example.com/wallpaper2', 'FALSE', 'FALSE'],
-    ['sample3@example.com', '鈴木', 'みほ', '', 'りな', '', 'FALSE', 'FALSE'],
+    ['メールアドレス', '宛名', 'メッセージ動画', '特典リンク', '待ち受け画像', '特典リンク'],
+    ['sample@example.com', '山田', 'あやか', 'https://example.com/video', 'りな', 'https://example.com/wallpaper'],
+    ['sample2@example.com', '佐藤', '', 'https://example.com/video2', '', 'https://example.com/wallpaper2'],
+    ['sample3@example.com', '鈴木', 'みほ', '', 'りな', ''],
   ].map((row) => row.map(csvEscape).join(',')).join('\n');
 
   const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' });
@@ -676,7 +677,7 @@ function downloadUpdatedCsv() {
 
 function buildUpdatedCsv() {
   const rows = [
-    ['メールアドレス', '宛名', els.sectionOneTitle.value || '1つ目の特典', '特典リンク', els.sectionTwoTitle.value || '2つ目の特典', '特典リンク', '送信対象', '送信済み'],
+    ['メールアドレス', '宛名', els.sectionOneTitle.value || '1つ目の特典', '特典リンク', els.sectionTwoTitle.value || '2つ目の特典', '特典リンク', '送信済み'],
     ...state.rows.map((row) => [
       row.email,
       row.recipientName,
@@ -684,7 +685,6 @@ function buildUpdatedCsv() {
       row.sectionOneLink,
       row.sectionTwoName,
       row.sectionTwoLink,
-      row.selected ? 'TRUE' : 'FALSE',
       row.sent ? 'TRUE' : 'FALSE',
     ]),
   ];
@@ -723,6 +723,10 @@ function splitLines(value) {
 
 function parseCheckbox(value) {
   return ['true', '1', 'yes', 'y', 'checked', '送信'].includes(cleanCell(value).toLowerCase());
+}
+
+function findSentColumnIndex(header) {
+  return header.findIndex((cell) => cleanCell(cell) === '送信済み');
 }
 
 function cleanCell(value) {
